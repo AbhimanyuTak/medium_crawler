@@ -1,0 +1,21 @@
+{
+  "name": "medium_crawler",
+  "version": "1.0.0",
+  "description": "A simple crawler to fetch links from medium.com",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "abhimanyu",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "express": "^4.16.1",
+    "node-horseman": "^3.3.0",
+    "phantomjs": "^2.1.7",
+    "phantomjs-prebuilt": "^2.1.15",
+    "request": "^2.83.0",
+    "request-promise": "^4.2.2",
+    "scraperjs": "^1.2.0"
+  }
+}
