@@ -1,37 +1,32 @@
 
-let queue = function() {
-	let requestQueue = []
+let Queue = function () {
+	this.requestQueue = []
+}
 
-	let getQueue = function() {
-		return requestQueue
-	}
+Queue.prototype.getQueue = function () {
+	return this.requestQueue
+}
 
-	let isEmpty = function() {
-		return requestQueue.length === 0
-	}
+Queue.prototype.isEmpty = function () {
+	return this.requestQueue.length === 0
+}
 
-	let enqueue = function(string) {
-		if(requestQueue.indexOf(string) === -1) requestQueue.push(string)
-	}
+Queue.prototype.enqueue = function (string) {
+	console.log("enqueing", string)
+	if(this.requestQueue.indexOf(string) === -1) this.requestQueue.push(string)
+}
 
-	let enqueueArray = function(array) {
-		for(let i =0; i < array.length; i++) {
-			enqueue(array[i])
-		}
-	}
-
-	let dequeue = function(string) {
-		if(isEmpty()) return null
-		return  requestQueue.shift()
-	}
-
-	return {
-		getQueue,
-		isEmpty,
-		enqueue,
-		enqueueArray,
-		dequeue
+Queue.prototype.enqueueArray = function (array) {
+	console.log("enqueing array", array)
+	for(let i =0; i < array.length; i++) {
+		this.enqueue(array[i])
 	}
 }
 
-module.exports = {queue}
+Queue.prototype.dequeue = function (string) {
+	if(this.isEmpty()) return null
+	return  this.requestQueue.shift()
+}
+
+
+module.exports = Queue
