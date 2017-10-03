@@ -54,8 +54,9 @@ function extractLinksFromPage(body) {
  * @return {Promise}
  */
 function requestPage(baseUrl, pageLink) {
+	console.log("requesting for", pageLink)
 
-	if(!pageLink.startsWith(baseUrl)) return null
+	if(!linkFromDomain(baseUrl, pageLink)) return null
 
 	var options = {
 	    uri: pageLink,
