@@ -4,6 +4,7 @@
   "description": "A simple crawler to fetch links from medium.com",
   "main": "index.js",
   "scripts": {
+    "start": "node app/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "abhimanyu",
