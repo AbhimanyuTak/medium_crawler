@@ -12,12 +12,14 @@ Queue.prototype.isEmpty = function () {
 }
 
 Queue.prototype.enqueue = function (string) {
-	console.log("enqueing", string)
 	if(this.requestQueue.indexOf(string) === -1) this.requestQueue.push(string)
 }
 
+/**
+ * Add links to queue from the given array
+ * @param  {Array}
+ */
 Queue.prototype.enqueueArray = function (array) {
-	console.log("enqueing array", array)
 	for(let i =0; i < array.length; i++) {
 		this.enqueue(array[i])
 	}
