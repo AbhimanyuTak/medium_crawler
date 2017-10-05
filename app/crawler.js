@@ -109,6 +109,8 @@ Crawler.prototype.traverse = function () {
 			        	self.concurrentReq--
 			        	self.queue.enqueueArray(links)
 
+			        	// toCSV.appendToCSV(allLinks[currentLink])
+
 			        	// Invoke traverse function if crawler is paused
 			        	if(self.crawlerPaused && !self.crawlerStopped) self.traverse()
 				    })
