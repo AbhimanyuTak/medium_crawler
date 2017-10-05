@@ -57,6 +57,8 @@ function requestPage(baseUrl, pageLink) {
 
 	if(!pageLink.startsWith(baseUrl)) return null
 
+	console.log("scraping...", currentLink)
+
 	var options = {
 	    uri: pageLink,
 	    transform: function (body) {

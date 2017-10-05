@@ -10,7 +10,8 @@ const config = require('./config/crawler.json')
  */
 let Crawler = function(startUrl) {
 	this.startUrl = startUrl
-	this.allLinks = [startUrl]
+	this.allLinks = {}
+	this.allLinks[startUrl] = false
 	this.totalRequests = 0
 	this.concurrentReq = 0
 	this.crawlerPaused = false
@@ -33,13 +34,16 @@ Crawler.prototype.getBaseURL = function (url) {
 }
 
 /**
- * To generate a final list of gathered links
+ * Trims trailing slash and spaces from URL
  * @param  {String} link
  */
-Crawler.prototype.finalLinks = function (link) {
-	if(this.allLinks.indexOf(link) === -1) {
-		this.allLinks.push(link)
+Crawler.prototype.trimURL = function (link) {
+	link = link.trim()
+	if(link[link.length - 1] === "/") {
+		link = link.substr(0, link.length - 1)
 	}
+
+	return link
 }
 
 /**
@@ -51,22 +55,14 @@ Crawler.prototype.initQueue = function (startUrl) {
 }
 
 /**
- * For merging arrays and suspending duplicates
- * @param  {Array}
- * @param  {Array}
- * @return {Array}
+ * For merging arrays links into global pool
+ * @param  {Object} obj
+ * @param  {Array} arr
+ * @return {Object}
  */
-Crawler.prototype.mergeArrayUniqueValues = function (arr1, arr2) {
-	let arr3 = []
-
-	arr3 = arr3.concat(arr1)
-
-	for(let i in arr2) {
-		if(arr3.indexOf(arr2[i])) {
-			arr3.push(arr2[i])
-		}
-	}
-	return arr3
+Crawler.prototype.mergeArrayWithObject = function (obj, arr) {
+	for(let i in arr) { obj[arr[i]] = true }
+	return obj
 }
 
 /**
@@ -76,16 +72,21 @@ Crawler.prototype.mergeArrayUniqueValues = function (arr1, arr2) {
 Crawler.prototype.traverse = function () {
 	let self = this
 
-	while(!self.queue.isEmpty() && this.totalRequests < config.MAX_REQUESTS) {
+	while(!self.queue.isEmpty() && (config.INFINTE_CRAWL || this.totalRequests < config.MAX_REQUESTS)) {
 		crawlerPaused = false
 		console.log("making", this.concurrentReq, "concurrent requests and", this.totalRequests, "requests made")
 		if(this.concurrentReq < config.MAX_CONCURRENT_REQUESTS) {
 			let currentLink = this.queue.dequeue()
-			this.finalLinks(currentLink)
+			// this.finalLinks(currentLink)
+			currentLink = this.trimURL(currentLink)
 
-			if(currentLink) {
+			if(!this.allLinks.hasOwnProperty(currentLink)) {
+				this.allLinks[currentLink] = false
+			}
+
+			if(currentLink && this.allLinks[currentLink] === false) {
 				let baseURL = this.getBaseURL(currentLink)
-				console.log("scraping...", currentLink)
+			
 				if(baseURL !== null) {
 					this.totalRequests++
 					this.concurrentReq++
@@ -93,6 +94,7 @@ Crawler.prototype.traverse = function () {
 					scraper.requestPage(baseURL, currentLink)
 					.then(function (links) {
 			        	// console.log(links)
+			        	self.allLinks[currentLink] = true
 			        	self.concurrentReq--
 			        	self.queue.enqueueArray(links)
 
@@ -119,12 +121,12 @@ Crawler.prototype.traverse = function () {
 	}
 
 	// Stop crawler if no more requests to be made
-	if((this.concurrentReq === 0 && this.queue.isEmpty()) || this.totalRequests >= config.MAX_REQUESTS) {
+	if((this.concurrentReq === 0 && this.queue.isEmpty()) || (!config.INFINTE_CRAWL && this.totalRequests >= config.MAX_REQUESTS)) {
 		this.crawlerStopped = true
-		this.allLinks = this.mergeArrayUniqueValues(this.allLinks, this.queue.getQueue())
-		console.log(this.concurrentReq, " ", this.totalRequests)
-		console.log("total links found", this.allLinks.length)
-		toCSV.writeToCSV(this.allLinks)
+		this.allLinks = this.mergeArrayWithObject(this.allLinks, this.queue.getQueue())
+		let allLinksArray = Object.keys(this.allLinks)
+		console.log("total links found", allLinksArray.length)
+		toCSV.writeToCSV(allLinksArray)
 	}
 
 
