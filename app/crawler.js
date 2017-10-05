@@ -34,6 +34,17 @@ Crawler.prototype.getBaseURL = function (url) {
 }
 
 /**
+ * Checks if link is from the same target domain
+ * 
+ * @param  {String} baseUrl
+ * @param  {String} link
+ * @return {Boolean} 
+ */
+Crawler.prototype.linkFromDomain = function (baseUrl, link) {
+	return baseUrl && link.startsWith(baseUrl)
+}
+
+/**
  * Trims trailing slash and spaces from URL
  * @param  {String} link
  */
@@ -87,7 +98,7 @@ Crawler.prototype.traverse = function () {
 			if(currentLink && this.allLinks[currentLink] === false) {
 				let baseURL = this.getBaseURL(currentLink)
 			
-				if(baseURL !== null) {
+				if(baseURL !== null && this.linkFromDomain(baseURL, currentLink)) {
 					this.totalRequests++
 					this.concurrentReq++
 
@@ -104,6 +115,9 @@ Crawler.prototype.traverse = function () {
 				    .catch(function (err) {
 				    	self.concurrentReq--
 				    	self.queue.enqueue(currentLink)
+
+				    	// Invoke traverse function if crawler is paused
+			        	if(self.crawlerPaused && !self.crawlerStopped) self.traverse()
 				    });
 				}
 			}

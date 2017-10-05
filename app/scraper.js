@@ -2,17 +2,6 @@ const request = require('request');
 const rp = require('request-promise');
 const cheerio = require('cheerio');
 
-/**
- * @function
- * Checks if link is from the same target domain
- * 
- * @param  {String} baseUrl
- * @param  {String} link
- * @return {Boolean} 
- */
-function linkFromDomain (baseUrl, link) {
-	return baseUrl && link.startsWith(baseUrl)
-}
 
 /**
  * Trims all the query params from the url
@@ -55,9 +44,9 @@ function extractLinksFromPage(body) {
  */
 function requestPage(baseUrl, pageLink) {
 
-	if(!pageLink.startsWith(baseUrl)) return null
+	// if(!pageLink.startsWith(baseUrl)) return null
 
-	console.log("scraping...", currentLink)
+	console.log("scraping...", pageLink)
 
 	var options = {
 	    uri: pageLink,
